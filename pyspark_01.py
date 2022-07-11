@@ -1,3 +1,11 @@
+
+
+# comments can be added in code for better readability.
+# can merge maximum and minimum move of the stock in query 1 for easy access to both of the data in the endpoint at once.
+# for 6th query mean and median queries can be merged by the use of joins on the query
+# or you can use percentile_approx function for median for query6: percentile_approx(parameter_to_apply_on, 0.5)
+
+
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.appName(
