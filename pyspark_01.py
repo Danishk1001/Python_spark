@@ -62,7 +62,7 @@ def query2():
 
 # query 3- previous - current
 def query3():
-    sqlDF = spark.sql("with temp_previous_close as (select Company,Open,Date,Close,LAG(Close,1,35.724998) over(partition by Company order by Date) as previous_close from full_data ASC) select Company,ABS(previous_close-Open) as max_gap from temp_previous_close order by max_gap DESC limit 1 ")
+    sqlDF = spark.sql("with temp_previous_close as (select Company,Open,Date,Close,LAG(Close,1,0) over(partition by Company order by Date) as previous_close from full_data ASC) select Company,ABS(previous_close-Open) as max_gap from temp_previous_close order by max_gap DESC limit 1 ")
     sqlDF = sqlDF.collect()
     dictt = dict(sqlDF)
     return dictt
