@@ -73,11 +73,19 @@ def query4():
     # sqlDF = spark.sql(
     #     "with cte as (select volume, rank() over(order by date) min_rank, rank() over (order by date desc) max_rank from full_data) select * from cte where min_rank =1 or max_rank=1")
     sqlDF = spark.sql(
-      "select Company,Open,High,(High-Open) as max_diff from (Select Company, (Select Open from full_data limit 1) as Open, max(High) as High from full_data group by Company)full_data order by max_diff desc limit 1")
+      """
+with df1 as (select company, open from (select company, open, dense_rank() over (partition by company order by date) 
+as d_rank1 from full_data)stock_table_1 where stock_table_1.d_rank1=1),df2 as (select company, close from 
+(select company, close, dense_rank() over (partition by company order by date desc) as d_rank2 from full_data)stock_table_2 
+where stock_table_2.d_rank2 = 1) select df1.company, df1.open, df2.close, df1.open-df2.close as max_diff 
+from df1 inner join df2 where df1.company = df2.company
+order by max_diff DESC limit 1
+""")
     sqlDF = sqlDF.collect()
     result = []
     for row in sqlDF:
-      result.append({'Open': row["Open"], 'Company': row["Company"], 'High': row["High"], 'Max_move':row["max_diff"]})
+        result.append({'Company': row["company"], 'Open': row["open"], 'Close': row["close"],
+                       'Max_diff': row["max_diff"]})
     return result
 
 
